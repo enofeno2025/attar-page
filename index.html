@@ -12,18 +12,21 @@
   padding-bottom:env(safe-area-inset-bottom,0px);
   --bg:#e9f0f6; --surface:#ffffff; --ink:#10283b; --muted:#5a6d7d;
   --brand:#0f4c6e; --brand-ink:#ffffff; --accent:#f2b632; --line:#d5dfe7; --wa:#25d366;
+  --c1:#c2410c; --c1b:#ffedd5; --c2:#0f7a55; --c2b:#dcf5ea; --c3:#6d3fd0; --c3b:#ece6fb;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     color-scheme:dark;
     --bg:#0a1620; --surface:#13283a; --ink:#e9f1f7; --muted:#9db0c0;
     --brand:#5db3e0; --brand-ink:#0a1620; --line:#24405a;
+    --c1:#ffa070; --c1b:#3a2118; --c2:#5fdcae; --c2b:#123227; --c3:#c3adff; --c3b:#2a2147;
   }
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
   --bg:#0a1620; --surface:#13283a; --ink:#e9f1f7; --muted:#9db0c0;
   --brand:#5db3e0; --brand-ink:#0a1620; --line:#24405a;
+    --c1:#ffa070; --c1b:#3a2118; --c2:#5fdcae; --c2b:#123227; --c3:#c3adff; --c3b:#2a2147;
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
@@ -88,6 +91,15 @@ tr:last-child td{border-bottom:0}
 .acts .btn{flex:1;padding:9px}
 .acts .del{padding:9px 14px}
 #admin .btn{width:100%}
+.k1{--c:var(--c1);--cb:var(--c1b)}.k2{--c:var(--c2);--cb:var(--c2b)}.k3{--c:var(--c3);--cb:var(--c3b)}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--cb,var(--bg));color:var(--c,var(--ink));padding:2px 10px;border-radius:999px;font-weight:700}
+.chip::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c,var(--muted))}
+.row.k1,.row.k2,.row.k3{border-inline-start:5px solid var(--c)}
+.contacts{display:grid;gap:8px;padding:16px 16px 0}
+.crow{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:14px}
+.num{font-weight:800;font-size:16px;letter-spacing:.3px}
+.cbtn{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.cbtn .btn{padding:9px 6px;font-size:14px}
 .book{display:flex;align-items:center;justify-content:center;gap:8px;margin:16px 16px 0;padding:14px;border-radius:14px;background:var(--accent);color:#10283b;font-weight:800;font-size:16px;text-decoration:none}
 .book svg{width:20px;height:20px}
 footer{text-align:center;color:var(--muted);font-size:13px;margin-top:16px}
@@ -104,10 +116,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:16px}
     <p class="sub" dir="ltr">Doctor English</p>
   </header>
 
-  <div class="cta">
-    <a class="btn call" href="tel:+201127587615"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>اتصال مباشر</a>
-    <a class="btn wa" id="wa1" href="#" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.6-4.7A8.5 8.5 0 1 1 8 19.5z"/></svg>تواصل واتساب</a>
-  </div>
+  <div class="contacts" id="contacts"></div>
 
   <nav class="social" id="social" aria-label="حسابات التواصل" hidden></nav>
 
@@ -148,7 +157,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:16px}
   </section>
 
   <a class="book" id="wa2" href="#" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>احجز مكانك الآن</a>
-  <footer>أ. هاني العطار · <span dir="ltr">01127587615</span></footer>
+  <footer>أ. هاني العطار · <span dir="ltr">01127587615</span> · <span dir="ltr">01129759593</span></footer>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -160,6 +169,7 @@ var CONFIG = {
   photo: STORE.photo,
   shareUrl: "",
   phone: "201127587615",
+  phones: [{num:"01127587615",intl:"201127587615"},{num:"01129759593",intl:"201129759593"}],
   bookText: "السلام عليكم أ. هاني، أريد الحجز في مجموعة اللغة الإنجليزية.",
   /* ضع الرابط في url وسيظهر الزر تلقائياً */
   social: [
@@ -193,7 +203,13 @@ var CONFIG = {
   if(CONFIG.photo){$("avatar").innerHTML='<img alt="" src="'+esc(CONFIG.photo)+'">'}
 
   var wa="https://wa.me/"+CONFIG.phone+"?text="+encodeURIComponent(CONFIG.bookText);
-  $("wa1").href="https://wa.me/"+CONFIG.phone; $("wa2").href=wa;
+  $("wa2").href=wa;
+  var PH='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>';
+  var WAI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.6-4.7A8.5 8.5 0 1 1 8 19.5z"/></svg>';
+  $("contacts").innerHTML=CONFIG.phones.map(function(p){
+    return '<div class="crow"><span class="num" dir="ltr">'+esc(p.num)+'</span><span class="cbtn"><a class="btn call" href="tel:+'+p.intl+'">'+PH+'اتصال</a><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/'+p.intl+'">'+WAI+'واتساب</a></span></div>';
+  }).join("");
+  function kc(n){n=String(n);if(/الزعيم/.test(n))return "k1";if(/مصر/.test(n))return "k2";if(/نور|تور|الاسلام|الإسلام/.test(n))return "k3";return ""}
 
   var ICONS={
     facebook:["#1877f2",'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 8V6.5c0-.7.3-1 1-1h1.8V2.2H14.3C11.8 2.2 10.5 3.8 10.5 6v2H8v3.3h2.5V21H14v-9.7h2.6L17 8z"/></svg>'],
@@ -212,12 +228,12 @@ var CONFIG = {
 
   $("schedule").innerHTML=CONFIG.schedule.map(function(g){
     return "<details><summary>"+esc(g.grade)+"</summary><div class=\"table-wrap\"><table><thead><tr><th>الأيام</th><th>الوقت</th><th>المكان</th></tr></thead><tbody>"+
-    g.rows.map(function(r){return "<tr><td>"+esc(r.days)+"</td><td>"+esc(r.time)+"</td><td>"+esc(r.place)+"</td></tr>"}).join("")+"</tbody></table></div></details>";
+    g.rows.map(function(r){return "<tr><td>"+esc(r.days)+"</td><td>"+esc(r.time)+"</td><td><span class=\"chip "+kc(r.place)+"\">"+esc(r.place)+"</span></td></tr>"}).join("")+"</tbody></table></div></details>";
   }).join("");
 
   $("places").innerHTML=CONFIG.places.map(function(p){
     var u="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(p);
-    return '<a class="row" target="_blank" rel="noopener" href="'+u+'"><span>'+esc(p)+'<br><small>افتح على Google Maps</small></span><span class="go">الاتجاهات</span></a>';
+    return '<a class="row '+kc(p)+'" target="_blank" rel="noopener" href="'+u+'"><span><span class="chip '+kc(p)+'">'+esc(p)+'</span><br><small>افتح على Google Maps</small></span><span class="go">الاتجاهات</span></a>';
   }).join("");
 
   var GR={1:"الصف الأول الإعدادي",2:"الصف الثاني الإعدادي",3:"الصف الثالث الإعدادي"};
@@ -228,7 +244,7 @@ var CONFIG = {
       STORE.groups.forEach(function(l,i){if(+l.g===n)items.push([l,i])});
       var body=items.length?'<div class="list">'+items.map(function(p){
         var l=p[0],i=p[1];
-        if(!admin)return '<a class="row" target="_blank" rel="noopener" href="'+esc(l.url)+'"><span>'+esc(l.name)+'</span><span class="go">انضم</span></a>';
+        if(!admin)return '<a class="row '+kc(l.name)+'" target="_blank" rel="noopener" href="'+esc(l.url)+'"><span class="chip '+kc(l.name)+'">'+esc(l.name)+'</span><span class="go">انضم</span></a>';
         return '<div class="gi" data-i="'+i+'"><input class="fld gn" value="'+esc(l.name)+'" maxlength="40" aria-label="اسم الجروب"><input class="fld gu" dir="ltr" inputmode="url" value="'+esc(l.url)+'" aria-label="رابط الجروب"><div class="acts"><button class="btn call sv" type="button">حفظ التعديل</button><button class="del rm" type="button">حذف</button></div></div>';
       }).join("")+'</div>':'<p class="note">روابط هذا الصف هتظهر هنا قريباً.</p>';
       return '<details'+(openG[n]?' open':'')+' data-n="'+n+'"><summary>'+GR[n]+'</summary><div class="gbody">'+body+'</div></details>';
